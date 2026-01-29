@@ -1,0 +1,4 @@
+{
+    "review_prompt": "Review this code for bugs, security issues, and improvements. List issues with line numbers. Format: [CRITICAL/WARNING/SUGGESTION] Line X: description",
+    "custom_rules": []
+}

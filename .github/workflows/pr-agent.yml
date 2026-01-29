@@ -1,0 +1,40 @@
+# PR-Agent GitHub Action (Self-Hosted with Z.AI)
+# Place this file in your target repository at .github/workflows/pr-agent.yml
+
+name: PR-Agent Review
+
+on:
+  pull_request:
+    types: [opened, reopened, ready_for_review, synchronize]
+  issue_comment:
+    types: [created]
+
+jobs:
+  pr_agent:
+    runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'pull_request' ||
+      (github.event_name == 'issue_comment' && 
+       contains(github.event.comment.body, '/review') ||
+       contains(github.event.comment.body, '/improve') ||
+       contains(github.event.comment.body, '/describe'))
+
+    steps:
+      - name: PR-Agent Review
+        uses: Codium-ai/pr-agent@main
+        env:
+          # GitHub Token (auto-provided by Actions)
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+          # Z.AI as OpenAI-compatible backend
+          OPENAI.API_BASE: ${{ secrets.ZAI_API_BASE }}
+          OPENAI.KEY: ${{ secrets.ZAI_API_KEY }}
+          
+          # Model configuration
+          CONFIG.MODEL: "glm-4"
+          CONFIG.MODEL_TURBO: "glm-4"
+          
+          # Auto-review on PR open
+          GITHUB_ACTION_CONFIG.AUTO_REVIEW: "true"
+          GITHUB_ACTION_CONFIG.AUTO_DESCRIBE: "true"
+          GITHUB_ACTION_CONFIG.AUTO_IMPROVE: "true"

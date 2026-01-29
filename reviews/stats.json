@@ -1,0 +1,308 @@
+{
+  "totals": {
+    "critical": 58,
+    "warning": 76,
+    "suggestion": 97,
+    "files": 34
+  },
+  "recent": [
+    {
+      "file": "vscode-extension\\out\\reviewService.js",
+      "abs_path": "C:\\Users\\zakio\\Desktop\\Work\\Local Rabbit\\vscode-extension\\out\\reviewService.js",
+      "type": "js",
+      "time": "21:10",
+      "critical": 3,
+      "warning": 3,
+      "suggestion": 5,
+      "status": "critical",
+      "issues": {
+        "critical": [
+          "[CRITICAL] Line 65: The `reviewFile` function does not check if the `document` parameter is null or undefined before trying to access its properties, which could lead to a runtime error.",
+          "[CRITICAL] Line 78: The `callReviewAPI` function is not defined in the provided code, which could lead to a runtime error.",
+          "[CRITICAL] Line 115: The `reviewWorkspace` function does not call the `reviewFile` function for each file in the workspace, which could lead to a functional error."
+        ],
+        "warning": [
+          "[WARNING] Line 82: The `issues` variable is not checked for null or undefined before trying to access its `length` property, which could lead to a runtime error.",
+          "[WARNING] Line 91: The `error` object is not checked for null or undefined before trying to access its `message` property, which could lead to a runtime error.",
+          "[WARNING] Line 101: The `reviewWorkspace` function does not check if the `workspaceFolders` variable is null or undefined before trying to access its properties, which could lead to a runtime error."
+        ],
+        "suggestion": [
+          "[SUGGESTION] Line 53: Consider adding a check to ensure that the `serverUrl` is a valid URL before making the API call.",
+          "[SUGGESTION] Line 74: Consider adding a try-catch block around the API call to handle any potential errors.",
+          "[SUGGESTION] Line 96: Consider logging the error message instead of just showing it to the user, to help with debugging.",
+          "[SUGGESTION] Line 125: It would be beneficial to add more informative error messages to help users diagnose issues, such as including the file path that caused the error.",
+          "[SUGGESTION] Line 105: Consider adding a progress bar or indicator to let the user know that the review is in progress."
+        ]
+      }
+    },
+    {
+      "file": "vscode-extension\\src\\reviewService.ts",
+      "abs_path": "C:\\Users\\zakio\\Desktop\\Work\\Local Rabbit\\vscode-extension\\src\\reviewService.ts",
+      "type": "ts",
+      "time": "21:10",
+      "critical": 3,
+      "warning": 3,
+      "suggestion": 5,
+      "status": "critical",
+      "issues": {
+        "critical": [
+          "[CRITICAL] Line 74: Potential memory leak due to unhandled error in `reviewWorkspace` function.",
+          "[CRITICAL] Line 81: Missing error handling for `vscode.workspace.findFiles` and `vscode.workspace.openTextDocument`.",
+          "[CRITICAL] Line 83: Inconsistent error handling between `reviewFile` and `reviewWorkspace` functions."
+        ],
+        "warning": [
+          "[WARNING] Line 34: Unvalidated server URL from settings can lead to potential security issues.",
+          "[WARNING] Line 39: Use of `error instanceof Error` for error checking may not cover all error cases.",
+          "[WARNING] Line 57: Missing validation for `message` variable before using it to construct error messages."
+        ],
+        "suggestion": [
+          "[SUGGESTION] Line 29: Consider adding a check to ensure the file is a supported file type before reviewing.",
+          "[SUGGESTION] Line 49: Instead of using a generic error message, consider providing more descriptive error messages based on the specific error.",
+          "[SUGGESTION] Line 64: Consider using a more specific title for the progress notification to distinguish it from other progress notifications.",
+          "[SUGGESTION] Line 69: Instead of hardcoding the supported file extensions, consider defining them as a constant or configurable variable.",
+          "[SUGGESTION] Line 77: Consider adding a try-catch block around the code that opens the text document to handle any potential errors."
+        ]
+      }
+    },
+    {
+      "file": "vscode-extension\\out\\reviewService.js",
+      "abs_path": "C:\\Users\\zakio\\Desktop\\Work\\Local Rabbit\\vscode-extension\\out\\reviewService.js",
+      "type": "js",
+      "time": "20:59",
+      "critical": 2,
+      "warning": 3,
+      "suggestion": 4,
+      "status": "critical",
+      "issues": {
+        "critical": [
+          "[CRITICAL] Line 66: The `callReviewAPI` function is not defined in the provided code, which will cause a ReferenceError when trying to call it.",
+          "[CRITICAL] Line 91: The `reviewWorkspace` method is not properly checking if the `workspaceFolders` array is empty before attempting to iterate over it. This could lead to a TypeError if the array is empty."
+        ],
+        "warning": [
+          "[WARNING] Line 56: The `serverUrl` is retrieved from the workspace configuration, but it's not validated or sanitized. This could lead to potential security issues if the URL is not properly formatted or if it contains malicious content.",
+          "[WARNING] Line 74: The `error` object is not properly handled when an error occurs while reviewing a file. The error message is only logged to the output channel, but it's not clear if the error is properly propagated to the caller.",
+          "[WARNING] Line 97: The `reviewWorkspace` method is only checking if the `workspaceFolders` array is null or undefined, but it's not checking if the array is empty. This could lead to unexpected behavior if the array is empty."
+        ],
+        "suggestion": [
+          "[SUGGESTION] Line 28: The `ReviewService` class has a dependency on `vscode`, `path`, and `fs` modules. It might be beneficial to inject these dependencies through the constructor to make the code more testable and flexible.",
+          "[SUGGESTION] Line 40: The `reviewFile` method is marked as `async`, but it's not clear if it's properly handling asynchronous operations. Consider using `try-catch` blocks or `await` expressions to ensure that asynchronous operations are properly handled.",
+          "[SUGGESTION] Line 50: The `outputChannel` is used to log messages, but it's not clear if the channel is properly configured or if it's the best way to handle logging in this context. Consider using a more robust logging mechanism or a dedicated logging library.",
+          "[SUGGESTION] Line 103: The `reviewWorkspace` method is not properly handling errors that may occur during the review process. Consider adding error handling mechanisms to ensure that errors are properly propagated and handled."
+        ]
+      }
+    },
+    {
+      "file": "vscode-extension\\out\\reviewService.d.ts",
+      "abs_path": "C:\\Users\\zakio\\Desktop\\Work\\Local Rabbit\\vscode-extension\\out\\reviewService.d.ts",
+      "type": "ts",
+      "time": "20:59",
+      "critical": 5,
+      "warning": 2,
+      "suggestion": 3,
+      "status": "critical",
+      "issues": {
+        "critical": [
+          "[CRITICAL] Line 14: The `getIssuesFromStats` method is missing its return type and parameter list.",
+          "[CRITICAL] Line 15: The `callReviewAPI` method is missing its return type and parameter list.",
+          "[CRITICAL] Line 16: The `getLanguageFromFilename` method is missing its return type and parameter list.",
+          "[CRITICAL] Line 17: The `triggerPythonReview` method is missing its return type and parameter list.",
+          "[CRITICAL] Line 18: The `findProjectRoot` method is missing its return type and parameter list."
+        ],
+        "warning": [
+          "[WARNING] Line 10: The `reviewFile` method does not handle any potential errors that may occur during the review process.",
+          "[WARNING] Line 11: The `reviewWorkspace` method does not handle any potential errors that may occur during the review process."
+        ],
+        "suggestion": [
+          "[SUGGESTION] Line 5: Consider adding a description to the `ReviewService` class to provide context about its purpose and functionality.",
+          "[SUGGESTION] Line 14-18: Consider adding JSDoc comments to the private methods to provide a description of their purpose and functionality, even if they are not part of the public API.",
+          "[SUGGESTION] Line 10-11: Consider adding parameter validation to the `reviewFile` and `reviewWorkspace` methods to ensure that the provided parameters are valid."
+        ]
+      }
+    },
+    {
+      "file": "vscode-extension\\src\\reviewService.ts",
+      "abs_path": "C:\\Users\\zakio\\Desktop\\Work\\Local Rabbit\\vscode-extension\\src\\reviewService.ts",
+      "type": "ts",
+      "time": "20:59",
+      "critical": 3,
+      "warning": 3,
+      "suggestion": 3,
+      "status": "critical",
+      "issues": {
+        "critical": [
+          "[CRITICAL] Line 55: The `callReviewAPI` function is not defined in this code snippet, it should be implemented or imported to handle the API call to the server.",
+          "[CRITICAL] Line 61: The `error` object is not checked for null or undefined before accessing its properties, which may result in a runtime error.",
+          "[CRITICAL] Line 73: The `vscode.window.showErrorMessage` and `vscode.window.showWarningMessage` functions are used to display error messages, but they do not provide any specific error details, which may make it difficult to diagnose and fix issues."
+        ],
+        "warning": [
+          "[WARNING] Line 15: The `reviewFile` function does not check if the `document` parameter is null or undefined before accessing its properties, which may result in a runtime error.",
+          "[WARNING] Line 29: The `serverUrl` variable is retrieved from the workspace configuration, but it is not validated to ensure it is a valid URL, which may result in an error when calling the API server.",
+          "[WARNING] Line 41: The `issues` array is checked for length, but it is not checked for null or undefined, which may result in a runtime error."
+        ],
+        "suggestion": [
+          "[SUGGESTION] Line 23: The `outputChannel` is created and shown in the `reviewFile` function, but it is not cleared or hidden when the function completes, which may leave the channel open and visible to the user unnecessarily.",
+          "[SUGGESTION] Line 51: The `reviewWorkspace` function uses `vscode.workspace.findFiles` to find all files in the workspace, but it does not check if the files are already open in the editor before calling `vscode.workspace.openTextDocument`, which may result in unnecessary file openings.",
+          "[SUGGESTION] Line 65: The `reviewWorkspace` function uses a progress bar to display the progress of the review, but it does not provide any feedback to the user when the review is complete, which may leave the user uncertain about the outcome of the review."
+        ]
+      }
+    },
+    {
+      "file": "vscode-extension\\src\\reviewService.ts",
+      "abs_path": "C:\\Users\\zakio\\Desktop\\Work\\Local Rabbit\\vscode-extension\\src\\reviewService.ts",
+      "type": "ts",
+      "time": "20:59",
+      "critical": 1,
+      "warning": 3,
+      "suggestion": 4,
+      "status": "critical",
+      "issues": {
+        "critical": [
+          "[CRITICAL] Line 75: The error handling mechanism does not account for all possible error scenarios. It only checks for `ECONNREFUSED` error and provides a specific message. Consider handling other types of errors as well."
+        ],
+        "warning": [
+          "[WARNING] Line 43: The `callReviewAPI` function is not defined within this class. Ensure it is imported or defined elsewhere in the codebase.",
+          "[WARNING] Line 23: The `reviewFile` function does not validate if the provided `document` is null or undefined before accessing its properties.",
+          "[WARNING] Line 59: The `reviewWorkspace` function does not handle the case when `files` is null or undefined."
+        ],
+        "suggestion": [
+          "[SUGGESTION] Line 15: Consider using a more descriptive name for the `outputChannel` variable, such as `reviewOutputChannel`.",
+          "[SUGGESTION] Line 31: The `try-catch` block is quite broad. Consider breaking it down into smaller sections to handle specific error scenarios more effectively.",
+          "[SUGGESTION] Line 67: The `reviewWorkspace` function uses a simple `for` loop to iterate over the files. Consider using `Promise.all` or a more concurrent approach to improve performance.",
+          "[SUGGESTION] Line 85: The `reviewWorkspace` function opens a text document for each file found. Consider using `vscode.workspace.openTextDocument` with the `cancellation` token to handle cancellation requests more efficiently."
+        ]
+      }
+    },
+    {
+      "file": "vscode-extension\\src\\reviewService.ts",
+      "abs_path": "C:\\Users\\zakio\\Desktop\\Work\\Local Rabbit\\vscode-extension\\src\\reviewService.ts",
+      "type": "ts",
+      "time": "20:59",
+      "critical": 2,
+      "warning": 5,
+      "suggestion": 3,
+      "status": "critical",
+      "issues": {
+        "critical": [
+          "[CRITICAL] Line 23: The `callReviewAPI` method is not defined in the provided code snippet, which could cause a compile-time error.",
+          "[CRITICAL] Line 65: The `callReviewAPI` method is not defined in the provided code snippet, which could cause a compile-time error."
+        ],
+        "warning": [
+          "[WARNING] Line 14: The `reviewFile` method does not check if the file is null or undefined before accessing its properties, which could lead to a runtime error.",
+          "[WARNING] Line 30: The `error` object is not checked for null or undefined before accessing its `message` property, which could lead to a runtime error.",
+          "[WARNING] Line 42: The `reviewWorkspace` method does not check if the `files` array is null or empty before iterating over it, which could lead to a runtime error.",
+          "[WARNING] Line 58: The `document` object is not checked for null or undefined before accessing its properties, which could lead to a runtime error.",
+          "[WARNING] Line 75: The `token.isCancellationRequested` check is not sufficient to handle all possible cancellation scenarios, consider using a more robust cancellation handling mechanism."
+        ],
+        "suggestion": [
+          "[SUGGESTION] Line 34: Consider using a more specific error handling mechanism instead of checking for the string 'ECONNREFUSED' in the error message.",
+          "[SUGGESTION] Line 71: Consider using a more descriptive variable name instead of `i` for the loop counter.",
+          "[SUGGESTION] Line 80: Consider using a more specific progress reporting mechanism instead of using the `vscode.window.withProgress` method with a generic title and cancellable option."
+        ]
+      }
+    },
+    {
+      "file": "vscode-extension\\src\\reviewService.ts",
+      "abs_path": "C:\\Users\\zakio\\Desktop\\Work\\Local Rabbit\\vscode-extension\\src\\reviewService.ts",
+      "type": "ts",
+      "time": "20:58",
+      "critical": 3,
+      "warning": 5,
+      "suggestion": 4,
+      "status": "critical",
+      "issues": {
+        "critical": [
+          "[CRITICAL] Line 43: The `callReviewAPI` function is not defined in the provided code, which could cause a runtime error.",
+          "[CRITICAL] Line 78: The `callReviewAPI` function is not defined in the provided code, which could cause a runtime error.",
+          "[CRITICAL] Line 106: The `callReviewAPI` function is not defined in the provided code, which could cause a runtime error."
+        ],
+        "warning": [
+          "[WARNING] Line 24: The `document.uri.fsPath` is used directly, but it does not account for potential errors that may occur when trying to access the file path. Consider adding error handling.",
+          "[WARNING] Line 26: The `document.getText()` method is used to retrieve the text content of the document, but it does not account for potential errors that may occur when trying to access the document content. Consider adding error handling.",
+          "[WARNING] Line 33: The `vscode.workspace.getConfiguration` method is used to retrieve the configuration, but it does not account for potential errors that may occur when trying to access the configuration. Consider adding error handling.",
+          "[WARNING] Line 83: The `try-catch` block does not handle all potential errors that may occur when trying to open the text document. Consider adding more comprehensive error handling.",
+          "[WARNING] Line 103: The `token.isCancellationRequested` check is only performed at the beginning of each iteration, which means that the loop may continue running for a short period after the user has requested cancellation. Consider adding a check after each file is processed."
+        ],
+        "suggestion": [
+          "[SUGGESTION] Line 20: Consider creating a separate function to handle the output channel logging to improve code readability and maintainability.",
+          "[SUGGESTION] Line 55: Consider using a `for...of` loop instead of a traditional `for` loop to iterate over the files, which can improve code readability.",
+          "[SUGGESTION] Line 67: The `progress.report` method is used to report the progress, but the `increment` value is hardcoded to `100 / files.length`. Consider making this value more dynamic based on the actual progress.",
+          "[SUGGESTION] Line 88: Consider using a `try-catch` block to handle any potential errors that may occur when trying to review a single file."
+        ]
+      }
+    },
+    {
+      "file": "scripts\\api_server.py",
+      "abs_path": "C:\\Users\\zakio\\Desktop\\Work\\Local Rabbit\\scripts\\api_server.py",
+      "type": "py",
+      "time": "20:57",
+      "critical": 1,
+      "warning": 2,
+      "suggestion": 11,
+      "status": "critical",
+      "issues": {
+        "critical": [
+          "1. [CRITICAL] Line 23: The CORS middleware is configured to allow all origins, credentials, methods, and headers. This can be a security risk. Consider restricting these settings to only what is necessary."
+        ],
+        "warning": [
+          "2. [WARNING] Line 45: The `client` variable is initialized globally, which can lead to issues with asynchronous requests. Consider using a session-based approach or injecting the client instance into the route handlers.",
+          "3. [WARNING] Line 64: The `.env` file is loaded into the environment variables, which can pose a security risk if sensitive information is stored in the file. Consider using a more secure method for storing and loading sensitive data."
+        ],
+        "suggestion": [
+          "Here are the issues and suggestions for the provided code:",
+          "1. [SUGGESTION] Line 12: The `sys.path.insert` call is not a good practice. Consider using a more standard way of importing modules, such as using relative imports or setting the `PYTHONPATH` environment variable.",
+          "2. [SUGGESTION] Line 26: The `client` variable is initialized with a call to `get_client()`, but the function is not defined in this code snippet. Consider adding a type hint or a docstring to clarify what this function returns.",
+          "3. [SUGGESTION] Line 34: The `custom_prompt` variable is initialized with a call to `load_custom_prompt()`, but the function is not defined in this code snippet. Consider adding a type hint or a docstring to clarify what this function returns.",
+          "4. [SUGGESTION] Line 50: The `startup` function is defined as an asynchronous function, but it does not seem to perform any asynchronous operations. Consider making it a synchronous function or adding a `await` statement to clarify its asynchronous nature.",
+          "5. [SUGGESTION] Line 65: The `env_path` variable is defined using the `Path` class from the `pathlib` module, but it is not clear why this is necessary. Consider using a simpler way of constructing the file path.",
+          "1. [SUGGESTION] Line 54: The `client` variable is initialized with a call to `get_client()`, which may involve some overhead. Consider adding a cache or a lazy loading mechanism to reduce the overhead of client initialization.",
+          "2. [SUGGESTION] Line 70: The `health` endpoint returns a `HealthResponse` object, which contains a `model` field that may be loaded from an environment variable. Consider caching this value or loading it lazily to reduce the overhead of environment variable lookups.",
+          "1. [SUGGESTION] Line 15: The code uses a mix of Python 3.6-style f-strings and Python 3.5-style string formatting. Consider standardizing on a single style throughout the codebase.",
+          "2. [SUGGESTION] Line 30: The `ReviewRequest` model is defined using the `BaseModel` class from the `pydantic` library. Consider adding type hints or docstrings to clarify the purpose of this model.",
+          "3. [SUGGESTION] Line 40: The `review` endpoint is defined using the `async` keyword, but it does not seem to perform any asynchronous operations. Consider adding a `await` statement or making the function synchronous to clarify its asynchronous nature."
+        ]
+      }
+    },
+    {
+      "file": "vscode-extension\\out\\reviewService.js",
+      "abs_path": "C:\\Users\\zakio\\Desktop\\Work\\Local Rabbit\\vscode-extension\\out\\reviewService.js",
+      "type": "js",
+      "time": "20:54",
+      "critical": 5,
+      "warning": 4,
+      "suggestion": 7,
+      "status": "critical",
+      "issues": {
+        "critical": [
+          "[CRITICAL] Line 1: The code is using the `\"use strict\"` directive, but it's not enclosed in an IIFE (Immediately Invoked Function Expression) or a module, which can lead to global variable leakage.",
+          "[CRITICAL] Line 73: The `reviewFile` method is not checking if the `document` parameter is null or undefined before accessing its properties.",
+          "[CRITICAL] Line 77: The `reviewFile` method is not checking if the `filePath` variable is null or undefined before passing it to the `getIssuesFromStats` method.",
+          "[CRITICAL] Line 85: The `reviewFile` method is not checking if the `issues` variable is null or undefined before passing it to the `setDiagnostics` method.",
+          "[CRITICAL] Line 104: The `reviewWorkspace` method is not checking if the `workspaceFolders` variable is null or undefined before accessing its properties."
+        ],
+        "warning": [
+          "[WARNING] Line 13: The `__importStar` function is not necessary, as the `require` function can be used directly.",
+          "[WARNING] Line 23: The `Object.defineProperty` function is used to define a property on an object, but it's not necessary in this case, as the property can be defined directly.",
+          "[WARNING] Line 55: The `ReviewService` class is not checking if the `diagnosticsManager` parameter is null or undefined before assigning it to a property.",
+          "[WARNING] Line 67: The `reviewFile` method is not checking if the `document` parameter has a `uri` property before accessing it."
+        ],
+        "suggestion": [
+          "[SUGGESTION] Line 10: The `__createBinding` function can be simplified to use a more modern syntax.",
+          "[SUGGESTION] Line 28: The `Object.keys` method can be used instead of the `ownKeys` function.",
+          "[SUGGESTION] Line 40: The `ReviewService` class can be defined using the `class` syntax with a constructor function.",
+          "[SUGGESTION] Line 50: The `reviewFile` method can be simplified to use a more modern syntax, such as async/await.",
+          "[SUGGESTION] Line 65: The `reviewWorkspace` method can be simplified to use a more modern syntax, such as async/await.",
+          "[SUGGESTION] Line 80: The `reviewFile` method can be refactored to separate the logic for reading from the stats.json file and triggering a new review via the Python script.",
+          "[SUGGESTION] Line 100: The `reviewWorkspace` method can be refactored to separate the logic for finding all files in the workspace and reviewing each file individually."
+        ]
+      }
+    }
+  ],
+  "daily": {
+    "2026-01-28": {
+      "day": "Wed",
+      "critical": 58,
+      "warning": 76,
+      "suggestion": 97
+    }
+  }
+}

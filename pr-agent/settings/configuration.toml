@@ -1,0 +1,85 @@
+# =====================================================
+# PR-AGENT CORE CONFIGURATION (Z.AI + GLM-4)
+# =====================================================
+
+[config]
+# Z.AI GLM-4 model
+model = "glm-4"
+model_turbo = "glm-4"
+fallback_models = ["glm-4-flash"]
+
+# Temperature: 0 = deterministic, 1 = creative
+temperature = 0.2
+
+# Token limits
+max_tokens = 4096
+
+# =====================================================
+# GIT PROVIDER
+# =====================================================
+[git_provider]
+provider_type = "github"
+
+# =====================================================
+# GITHUB SETTINGS
+# =====================================================
+[github]
+auto_review = true
+auto_describe = true
+auto_improve = true
+pr_actions = ["opened", "reopened", "ready_for_review", "review_requested"]
+
+# =====================================================
+# PR REVIEWER SETTINGS
+# =====================================================
+[pr_reviewer]
+skip_files = [
+    "*.md",
+    "*.json",
+    "*.lock",
+    "package-lock.json",
+    "yarn.lock",
+    "pnpm-lock.yaml",
+    "*.min.js",
+    "*.min.css"
+]
+
+max_code_suggestions = 5
+focus_on_security = true
+focus_on_performance = true
+focus_on_maintainability = true
+
+# =====================================================
+# PR DESCRIPTION SETTINGS
+# =====================================================
+[pr_description]
+enabled = true
+max_length = 500
+
+# =====================================================
+# CODE SUGGESTIONS
+# =====================================================
+[pr_code_suggestions]
+max_suggestions = 3
+include_refactoring = true
+include_security_fixes = true
+
+# =====================================================
+# OUTPUT FORMAT
+# =====================================================
+[output]
+format = "markdown"
+analyze_complexity = true
+
+# =====================================================
+# PERFORMANCE (Cloud API is faster than local)
+# =====================================================
+[performance]
+llm_timeout = 60
+max_concurrent_reviews = 2
+
+# =====================================================
+# LOGGING
+# =====================================================
+[logging]
+level = "info"

@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local CodeRabbit — Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg: #09090b;
+            --surface: #111113;
+            --surface-hover: #18181b;
+            --border: rgba(255, 255, 255, 0.08);
+            --text: #fafafa;
+            --text-secondary: #a1a1aa;
+            --text-muted: #52525b;
+            --accent: #22c55e;
+            --critical: #ef4444;
+            --warning: #eab308;
+            --info: #0ea5e9;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Geist', -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 48px 32px;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 48px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-mark {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent) 0%, #16a34a 100%);
+            border-radius: 10px;
+            display: grid;
+            place-items: center;
+        }
+
+        .logo-mark svg {
+            width: 22px;
+            height: 22px;
+            color: white;
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+
+        .logo-text span {
+            color: var(--accent);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s ease;
+        }
+
+        .btn:hover {
+            background: var(--surface-hover);
+            color: var(--text);
+        }
+
+        .btn svg {
+            width: 15px;
+            height: 15px;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+
+        /* Stats Grid - Simple 4 columns */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.2s ease;
+            cursor: default;
+        }
+
+        .stat-card:hover {
+            background: var(--surface-hover);
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: grid;
+            place-items: center;
+        }
+
+        .stat-icon svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .stat-icon--accent {
+            background: rgba(34, 197, 94, 0.12);
+            color: var(--accent);
+        }
+
+        .stat-icon--critical {
+            background: rgba(239, 68, 68, 0.12);
+            color: var(--critical);
+        }
+
+        .stat-icon--warning {
+            background: rgba(234, 179, 8, 0.12);
+            color: var(--warning);
+        }
+
+        .stat-icon--info {
+            background: rgba(14, 165, 233, 0.12);
+            color: var(--info);
+        }
+
+        .stat-badge {
+            font-family: 'Geist Mono', monospace;
+            font-size: 10px;
+            font-weight: 500;
+            padding: 4px 8px;
+            border-radius: 100px;
+            background: rgba(34, 197, 94, 0.12);
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .stat-badge::before {
+            content: '';
+            width: 5px;
+            height: 5px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.4;
+            }
+        }
+
+        .stat-value {
+            font-size: 40px;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            line-height: 1;
+            margin-bottom: 6px;
+        }
+
+        .stat-card:nth-child(1) .stat-value {
+            color: var(--accent);
+        }
+
+        .stat-card:nth-child(2) .stat-value {
+            color: var(--critical);
+        }
+
+        .stat-card:nth-child(3) .stat-value {
+            color: var(--warning);
+        }
+
+        .stat-card:nth-child(4) .stat-value {
+            color: var(--info);
+        }
+
+        .stat-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        /* Charts Row - 2 columns */
+        .charts-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-title svg {
+            width: 16px;
+            height: 16px;
+            color: var(--text-muted);
+        }
+
+        .chart-container {
+            height: 240px;
+            position: relative;
+        }
+
+        /* Donut center */
+        .donut-wrapper {
+            position: relative;
+            height: 240px;
+        }
+
+        .donut-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -60%);
+            text-align: center;
+        }
+
+        .donut-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .donut-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        /* Activity List */
+        .activity-card {
+            padding: 20px;
+        }
+
+        .activity-list {
+            list-style: none;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 16px;
+            border-radius: 10px;
+            margin-bottom: 6px;
+            background: transparent;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .activity-item:hover {
+            background: rgba(255, 255, 255, 0.03);
+            border-color: var(--border);
+        }
+
+        .activity-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .activity-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+        }
+
+        .activity-icon svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .activity-icon--ts {
+            background: rgba(49, 120, 198, 0.15);
+            color: #3178c6;
+        }
+
+        .activity-icon--py {
+            background: rgba(55, 118, 171, 0.15);
+            color: #3776ab;
+        }
+
+        .activity-icon--js {
+            background: rgba(247, 223, 30, 0.15);
+            color: #f0db4f;
+        }
+
+        .activity-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .activity-file {
+            font-family: 'Geist Mono', monospace;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text);
+            margin-bottom: 2px;
+        }
+
+        .activity-meta {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .activity-author {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .activity-badge {
+            font-family: 'Geist Mono', monospace;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 6px;
+            text-transform: uppercase;
+        }
+
+        .activity-badge--critical {
+            background: rgba(239, 68, 68, 0.12);
+            color: var(--critical);
+        }
+
+        .activity-badge--warning {
+            background: rgba(234, 179, 8, 0.12);
+            color: var(--warning);
+        }
+
+        .activity-badge--clean {
+            background: rgba(34, 197, 94, 0.12);
+            color: var(--accent);
+        }
+
+        /* Activity Details */
+        .activity-details {
+            padding: 0 20px 20px 66px;
+            display: none;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 8px;
+        }
+
+        .activity-details.open {
+            display: block;
+        }
+
+        .issue-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .issue-item {
+            font-family: 'Geist Mono', monospace;
+            font-size: 11px;
+            padding: 10px 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+            border-left: 2px solid transparent;
+            line-height: 1.4;
+            color: var(--text-secondary);
+            white-space: pre-wrap;
+        }
+
+        .issue-item--critical {
+            border-left-color: var(--critical);
+            background: rgba(239, 68, 68, 0.05);
+        }
+
+        .issue-item--warning {
+            border-left-color: var(--warning);
+            background: rgba(234, 179, 8, 0.05);
+        }
+
+        .issue-item--suggestion {
+            border-left-color: var(--info);
+            background: rgba(14, 165, 233, 0.05);
+        }
+
+        .activity-actions {
+            margin-top: 12px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-sm {
+            padding: 4px 10px;
+            font-size: 11px;
+        }
+
+        /* Animations */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stat-card,
+        .card {
+            animation: fadeUp 0.5s ease backwards;
+        }
+
+        .stats-row .stat-card:nth-child(1) {
+            animation-delay: 0.05s;
+        }
+
+        .stats-row .stat-card:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .stats-row .stat-card:nth-child(3) {
+            animation-delay: 0.15s;
+        }
+
+        .stats-row .stat-card:nth-child(4) {
+            animation-delay: 0.2s;
+        }
+
+        .charts-row .card:nth-child(1) {
+            animation-delay: 0.25s;
+        }
+
+        .charts-row .card:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+
+        .activity-card {
+            animation-delay: 0.35s;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .stats-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .charts-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 24px 16px;
+            }
+
+            .stats-row {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 16px;
+                align-items: flex-start;
+            }
+
+            .stat-value {
+                font-size: 32px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <div class="logo-mark">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <polyline points="16 18 22 12 16 6" />
+                        <polyline points="8 6 2 12 8 18" />
+                    </svg>
+                </div>
+                <span class="logo-text">Code<span>Rabbit</span></span>
+            </div>
+            <div class="header-actions">
+                <button class="btn" onclick="location.reload()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
+                        <path d="M21 3v5h-5" />
+                    </svg>
+                    Refresh
+                </button>
+                <button class="btn btn-primary" onclick="window.open('prompt-builder.html')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                    </svg>
+                    Configure
+                </button>
+            </div>
+        </header>
+
+        <!-- Stats Row -->
+        <section class="stats-row">
+            <article class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon stat-icon--accent">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                            <polyline points="14 2 14 8 20 8" />
+                        </svg>
+                    </div>
+                    <div class="stat-badge">Live</div>
+                </div>
+                <div class="stat-value" id="statFiles">47</div>
+                <div class="stat-label">Files Reviewed</div>
+            </article>
+
+            <article class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon stat-icon--critical">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="12" y1="8" x2="12" y2="12" />
+                            <line x1="12" y1="16" x2="12.01" y2="16" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="stat-value" id="statCritical">8</div>
+                <div class="stat-label">Critical</div>
+            </article>
+
+            <article class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon stat-icon--warning">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                            <line x1="12" y1="9" x2="12" y2="13" />
+                            <line x1="12" y1="17" x2="12.01" y2="17" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="stat-value" id="statWarning">23</div>
+                <div class="stat-label">Warnings</div>
+            </article>
+
+            <article class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon stat-icon--info">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10" />
+                            <path d="M12 16v-4" />
+                            <path d="M12 8h.01" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="stat-value" id="statSuggestion">56</div>
+                <div class="stat-label">Suggestions</div>
+            </article>
+        </section>
+
+        <!-- Charts Row -->
+        <section class="charts-row">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 3v18h18" />
+                            <path d="m19 9-5 5-4-4-3 3" />
+                        </svg>
+                        Issue Trends
+                    </h2>
+                </div>
+                <div class="chart-container">
+                    <canvas id="trendChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21.21 15.89A10 10 0 1 1 8 2.83" />
+                            <path d="M22 12A10 10 0 0 0 12 2v10z" />
+                        </svg>
+                        Distribution
+                    </h2>
+                </div>
+                <div class="donut-wrapper">
+                    <canvas id="donutChart"></canvas>
+                    <div class="donut-center">
+                        <div class="donut-value">87</div>
+                        <div class="donut-label">Total</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Activity -->
+        <section class="card activity-card">
+            <div class="card-header">
+                <h2 class="card-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10" />
+                        <polyline points="12 6 12 12 16 14" />
+                    </svg>
+                    Recent Activity
+                </h2>
+            </div>
+            <ul class="activity-list" id="activityList"></ul>
+        </section>
+    </div>
+
+    <script>
+        // Chart defaults
+        Chart.defaults.color = '#52525b';
+        Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.04)';
+        Chart.defaults.font.family = "'Geist', sans-serif";
+
+        let trendChart, donutChart;
+
+        // Trend Chart
+        const trendCtx = document.getElementById('trendChart').getContext('2d');
+
+        const criticalGradient = trendCtx.createLinearGradient(0, 0, 0, 240);
+        criticalGradient.addColorStop(0, 'rgba(239, 68, 68, 0.2)');
+        criticalGradient.addColorStop(1, 'rgba(239, 68, 68, 0)');
+
+        const warningGradient = trendCtx.createLinearGradient(0, 0, 0, 240);
+        warningGradient.addColorStop(0, 'rgba(234, 179, 8, 0.2)');
+        warningGradient.addColorStop(1, 'rgba(234, 179, 8, 0)');
+
+        const infoGradient = trendCtx.createLinearGradient(0, 0, 0, 240);
+        infoGradient.addColorStop(0, 'rgba(14, 165, 233, 0.2)');
+        infoGradient.addColorStop(1, 'rgba(14, 165, 233, 0)');
+
+        trendChart = new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [
+                    {
+                        label: 'Critical',
+                        data: [0, 0, 0, 0, 0, 0, 0],
+                        borderColor: '#ef4444',
+                        backgroundColor: criticalGradient,
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        pointHoverRadius: 5,
+                        pointHoverBackgroundColor: '#09090b',
+                        pointHoverBorderColor: '#ef4444',
+                        pointHoverBorderWidth: 2
+                    },
+                    {
+                        label: 'Warnings',
+                        data: [0, 0, 0, 0, 0, 0, 0],
+                        borderColor: '#eab308',
+                        backgroundColor: warningGradient,
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        pointHoverRadius: 5,
+                        pointHoverBackgroundColor: '#09090b',
+                        pointHoverBorderColor: '#eab308',
+                        pointHoverBorderWidth: 2
+                    },
+                    {
+                        label: 'Suggestions',
+                        data: [0, 0, 0, 0, 0, 0, 0],
+                        borderColor: '#0ea5e9',
+                        backgroundColor: infoGradient,
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        pointHoverRadius: 5,
+                        pointHoverBackgroundColor: '#09090b',
+                        pointHoverBorderColor: '#0ea5e9',
+                        pointHoverBorderWidth: 2
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { intersect: false, mode: 'index' },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        align: 'end',
+                        labels: {
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            padding: 16,
+                            font: { size: 11, weight: '500' }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: '#18181b',
+                        borderColor: 'rgba(255,255,255,0.1)',
+                        borderWidth: 1,
+                        padding: 12,
+                        cornerRadius: 8,
+                        displayColors: true,
+                        boxPadding: 4
+                    }
+                },
+                scales: {
+                    x: { grid: { display: false }, ticks: { font: { size: 11 } } },
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(255,255,255,0.03)' },
+                        ticks: { font: { size: 11 }, stepSize: 5 }
+                    }
+                },
+                animation: { duration: 1000, easing: 'easeOutQuart' }
+            }
+        });
+
+        // Donut Chart
+        const donutCtx = document.getElementById('donutChart').getContext('2d');
+
+        donutChart = new Chart(donutCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Critical', 'Warnings', 'Suggestions'],
+                datasets: [{
+                    data: [0, 0, 0],
+                    backgroundColor: ['#ef4444', '#eab308', '#0ea5e9'],
+                    borderWidth: 0,
+                    hoverOffset: 6,
+                    spacing: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '72%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            padding: 16,
+                            font: { size: 11, weight: '500' }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: '#18181b',
+                        borderColor: 'rgba(255,255,255,0.1)',
+                        borderWidth: 1,
+                        padding: 10,
+                        cornerRadius: 6
+                    }
+                },
+                animation: { duration: 1200, easing: 'easeOutQuart' }
+            }
+        });
+
+        // Activity List - Load from stats.json
+        async function loadStats() {
+            try {
+                const response = await fetch('reviews/stats.json');
+                if (!response.ok) throw new Error('No stats yet');
+                const stats = await response.json();
+
+                // Update stat cards
+                document.getElementById('statFiles').textContent = stats.totals?.files || 0;
+                document.getElementById('statCritical').textContent = stats.totals?.critical || 0;
+                document.getElementById('statWarning').textContent = stats.totals?.warning || 0;
+                document.getElementById('statSuggestion').textContent = stats.totals?.suggestion || 0;
+
+                // Update donut center
+                const total = (stats.totals?.critical || 0) + (stats.totals?.warning || 0) + (stats.totals?.suggestion || 0);
+                document.querySelector('.donut-value').textContent = total;
+
+                if (stats.recent && stats.recent.length > 0) {
+                    document.getElementById('activityList').innerHTML = stats.recent.map((a, i) => {
+                        // Generate VS Code link
+                        const vscodeLink = a.abs_path
+                            ? `vscode://file/${a.abs_path.replace(/\\/g, '/').split('/').map(encodeURIComponent).join('/')}`
+                            : '#';
+
+                        // Generate Issues HTML
+                        let issuesHtml = '';
+                        if (a.issues) {
+                            ['critical', 'warning', 'suggestion'].forEach(type => {
+                                if (a.issues[type] && a.issues[type].length > 0) {
+                                    a.issues[type].forEach(msg => {
+                                        issuesHtml += `<div class="issue-item issue-item--${type}">${msg.replace(/</g, '&lt;')}</div>`;
+                                    });
+                                }
+                            });
+                        }
+                        if (!issuesHtml && a.status === 'clean') {
+                            issuesHtml = '<div class="issue-item issue-item--suggestion">Code looks good! No issues found.</div>';
+                        }
+
+                        return `
+                        <li class="activity-item" onclick="toggleDetails('details-${i}')" style="cursor: pointer; border-bottom: none;">
+                            <div class="activity-icon activity-icon--${a.type || 'ts'}">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+                                    <polyline points="14 2 14 8 20 8"/>
+                                </svg>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-file">${a.file}</div>
+                                <div class="activity-meta">
+                                    ${a.time}${a.author ? ` · <span class="activity-author">${a.author}</span>` : ''} · ${a.critical} Errors
+                                </div>
+                            </div>
+                            <span class="activity-badge activity-badge--${a.status}">
+                                ${a.status.charAt(0).toUpperCase() + a.status.slice(1)}
+                            </span>
+                        </li>
+                        <li id="details-${i}" class="activity-details">
+                            <div class="issue-list">
+                                ${issuesHtml}
+                            </div>
+                            <div class="activity-actions">
+                                <button class="btn btn-primary btn-sm" onclick="window.location.href='${vscodeLink}'">
+                                    Open in VS Code
+                                </button>
+                            </div>
+                        </li>
+                    `}).join('');
+                }
+
+                // Update charts if daily data exists
+                if (stats.daily && Object.keys(stats.daily).length > 0) {
+                    let days = Object.values(stats.daily).slice(-7);
+
+                    // UX Fix: If only 1 day, add a "Start" point for visual context
+                    if (days.length === 1) {
+                        const today = new Date(days[0].day); // Usually "Mon" etc.
+                        days = [
+                            { day: '', critical: 0, warning: 0, suggestion: 0 },
+                            days[0]
+                        ];
+                    }
+
+                    const labels = days.map(d => d.day);
+                    const criticalData = days.map(d => d.critical);
+                    const warningData = days.map(d => d.warning);
+                    const suggestionData = days.map(d => d.suggestion);
+
+                    // Update trend chart
+                    if (trendChart) {
+                        trendChart.data.labels = labels;
+                        trendChart.data.datasets[0].data = criticalData;
+                        trendChart.data.datasets[1].data = warningData;
+                        trendChart.data.datasets[2].data = suggestionData;
+
+                        // Force Integer Y-Axis
+                        trendChart.options.scales.y.ticks.stepSize = 1;
+
+                        trendChart.update('none');
+                    }
+
+                    // Update donut chart
+                    if (donutChart) {
+                        donutChart.data.datasets[0].data = [
+                            stats.totals?.critical || 0,
+                            stats.totals?.warning || 0,
+                            stats.totals?.suggestion || 0
+                        ];
+                        donutChart.update('none');
+                    }
+                }
+
+                console.log('📊 Stats loaded from reviews/stats.json');
+            } catch (e) {
+                console.log('ℹ️ No stats.json yet - showing sample data. Run the watcher to generate live data.');
+                // Keep default sample data
+                renderSampleActivities();
+            }
+        }
+
+        function renderSampleActivities() {
+            const activities = [
+                { file: 'src/components/Header.tsx', type: 'ts', time: 'Sample data', status: 'warning' },
+                { file: 'scripts/watcher.py', type: 'py', time: 'Run watcher', status: 'clean' },
+                { file: 'src/lib/auth.js', type: 'js', time: 'to see live data', status: 'clean' }
+            ];
+            document.getElementById('activityList').innerHTML = activities.map(a => `
+                <li class="activity-item">
+                    <div class="activity-icon activity-icon--${a.type}">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                        </svg>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-file">${a.file}</div>
+                        <div class="activity-meta">${a.time}</div>
+                    </div>
+                    <span class="activity-badge activity-badge--${a.status}">
+                        ${a.status.charAt(0).toUpperCase() + a.status.slice(1)}
+                    </span>
+                </li>
+            `).join('');
+        }
+
+        // Load stats on page load
+        loadStats();
+
+        // Real-time updates via SSE (with fallback to polling)
+        let sseConnected = false;
+        let refreshInterval = null;
+
+        function connectSSE() {
+            try {
+                const eventSource = new EventSource('http://localhost:8765/events');
+
+                eventSource.onopen = () => {
+                    console.log('🔌 Connected to real-time server');
+                    sseConnected = true;
+                    // Clear polling if SSE works
+                    if (refreshInterval) {
+                        clearInterval(refreshInterval);
+                        refreshInterval = null;
+                    }
+                    // Update live badge
+                    const liveBadge = document.querySelector('.live-badge');
+                    if (liveBadge) liveBadge.style.background = 'var(--accent)';
+                };
+
+                eventSource.addEventListener('update', (e) => {
+                    const data = JSON.parse(e.data);
+                    console.log('📡 Real-time update:', data);
+                    // Reload stats immediately
+                    loadStats();
+                });
+
+                eventSource.addEventListener('status', (e) => {
+                    const data = JSON.parse(e.data);
+                    console.log('📋 Status:', data.message);
+                });
+
+                eventSource.onerror = () => {
+                    console.log('⚠️ SSE disconnected, falling back to polling');
+                    sseConnected = false;
+                    eventSource.close();
+                    // Fall back to polling
+                    if (!refreshInterval) {
+                        refreshInterval = setInterval(loadStats, 10000);
+                    }
+                    // Try to reconnect after 5 seconds
+                    setTimeout(connectSSE, 5000);
+                };
+            } catch (e) {
+                console.log('ℹ️ SSE not available, using polling');
+                if (!refreshInterval) {
+                    refreshInterval = setInterval(loadStats, 10000);
+                }
+            }
+        }
+
+        // Toggle details view
+        window.toggleDetails = function (id) {
+            const el = document.getElementById(id);
+            if (el) el.classList.toggle('open');
+        }
+
+        // Try SSE first, fall back to polling
+        connectSSE();
+
+        // Also set up polling as backup
+        refreshInterval = setInterval(loadStats, 10000);
+    </script>
+</body>
+
+</html>

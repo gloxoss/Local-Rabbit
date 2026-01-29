@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Rabbit head -->
+  <circle cx="12" cy="14" r="6"/>
+  <!-- Left ear -->
+  <ellipse cx="8" cy="5" rx="2" ry="4"/>
+  <!-- Right ear -->
+  <ellipse cx="16" cy="5" rx="2" ry="4"/>
+  <!-- Left eye -->
+  <circle cx="10" cy="13" r="1" fill="currentColor"/>
+  <!-- Right eye -->
+  <circle cx="14" cy="13" r="1" fill="currentColor"/>
+  <!-- Nose -->
+  <circle cx="12" cy="15" r="0.5" fill="currentColor"/>
+</svg>

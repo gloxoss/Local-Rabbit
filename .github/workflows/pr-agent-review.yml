@@ -1,0 +1,35 @@
+# Optional: PR-Agent Review via GitHub Actions
+# Alternative to webhooks - triggers reviews on PR events
+# Usage: Copy to your target repository's .github/workflows/
+
+name: PR Agent Review
+
+on:
+  pull_request:
+    types: [opened, reopened, ready_for_review, synchronize]
+
+jobs:
+  pr_review:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Trigger PR Agent
+        run: |
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          REPO=${{ github.repository }}
+          
+          # Replace with your PR-Agent server URL
+          # For ngrok: https://xxxx.ngrok.io
+          # For VPS: https://your-domain.com
+          PR_AGENT_URL="${{ secrets.PR_AGENT_URL }}"
+          
+          curl -X POST "${PR_AGENT_URL}/api/v1/github_webhooks" \
+            -H "Content-Type: application/json" \
+            -H "X-GitHub-Event: pull_request" \
+            -d "{
+              \"action\": \"opened\",
+              \"repository\": {\"full_name\": \"$REPO\"},
+              \"pull_request\": {\"number\": $PR_NUMBER}
+            }"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,168 @@
+{
+    "name": "local-coderabbit",
+    "displayName": "Local CodeRabbit",
+    "description": "AI-powered code review with real-time diagnostics - works offline with Ollama",
+    "version": "1.0.0",
+    "publisher": "local-coderabbit",
+    "engines": {
+        "vscode": "^1.85.0"
+    },
+    "categories": [
+        "Linters",
+        "Programming Languages",
+        "Other"
+    ],
+    "keywords": [
+        "ai",
+        "code review",
+        "linting",
+        "ollama",
+        "diagnostics"
+    ],
+    "icon": "images/icon.png",
+    "activationEvents": [
+        "onStartupFinished"
+    ],
+    "main": "./out/extension.js",
+    "contributes": {
+        "commands": [
+            {
+                "command": "localCoderabbit.reviewFile",
+                "title": "Local CodeRabbit: Review Current File"
+            },
+            {
+                "command": "localCoderabbit.reviewWorkspace",
+                "title": "Local CodeRabbit: Review Workspace"
+            },
+            {
+                "command": "localCoderabbit.toggleAutoReview",
+                "title": "Local CodeRabbit: Toggle Auto-Review"
+            },
+            {
+                "command": "localCoderabbit.showDashboard",
+                "title": "Local CodeRabbit: Open Dashboard"
+            },
+            {
+                "command": "localCoderabbit.clearDiagnostics",
+                "title": "Local CodeRabbit: Clear All Diagnostics"
+            }
+        ],
+        "configuration": {
+            "title": "Local CodeRabbit",
+            "properties": {
+                "localCoderabbit.serverUrl": {
+                    "type": "string",
+                    "default": "http://localhost:8765",
+                    "description": "URL of the Local CodeRabbit SSE server"
+                },
+                "localCoderabbit.autoReview": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Automatically review files on save"
+                },
+                "localCoderabbit.minSeverity": {
+                    "type": "string",
+                    "enum": [
+                        "critical",
+                        "warning",
+                        "suggestion"
+                    ],
+                    "default": "suggestion",
+                    "description": "Minimum severity level to show"
+                },
+                "localCoderabbit.enableStatusBar": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Show status bar item"
+                },
+                "localCoderabbit.watcherPath": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Path to watcher.py (auto-detected if empty)"
+                }
+            }
+        },
+        "keybindings": [
+            {
+                "command": "localCoderabbit.reviewFile",
+                "key": "ctrl+shift+r",
+                "mac": "cmd+shift+r",
+                "when": "editorTextFocus"
+            },
+            {
+                "command": "localCoderabbit.focusSidebar",
+                "key": "ctrl+shift+c",
+                "mac": "cmd+shift+c"
+            }
+        ],
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "localCoderabbit",
+                    "title": "CodeRabbit",
+                    "icon": "resources/rabbit.svg"
+                }
+            ]
+        },
+        "views": {
+            "localCoderabbit": [
+                {
+                    "id": "localCoderabbit.issues",
+                    "name": "Issues",
+                    "icon": "resources/rabbit.svg",
+                    "contextualTitle": "CodeRabbit Issues"
+                },
+                {
+                    "id": "localCoderabbit.dashboard",
+                    "name": "Dashboard",
+                    "type": "webview",
+                    "icon": "resources/rabbit.svg",
+                    "contextualTitle": "CodeRabbit Dashboard"
+                },
+                {
+                    "id": "localCoderabbit.chat",
+                    "name": "Chat",
+                    "type": "webview",
+                    "icon": "resources/rabbit.svg",
+                    "contextualTitle": "Ask Rabbit"
+                }
+            ]
+        },
+        "viewsWelcome": [
+            {
+                "view": "localCoderabbit.issues",
+                "contents": "No issues found.\n[Review Current File](command:localCoderabbit.reviewFile)"
+            }
+        ]
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "pretest": "npm run compile",
+        "lint": "eslint src --ext ts",
+        "package": "vsce package"
+    },
+    "devDependencies": {
+        "@types/eventsource": "^1.1.15",
+        "@types/highlight.js": "^9.12.4",
+        "@types/markdown-it": "^14.1.2",
+        "@types/node": "^20.0.0",
+        "@types/vscode": "^1.85.0",
+        "@typescript-eslint/eslint-plugin": "^6.0.0",
+        "@typescript-eslint/parser": "^6.0.0",
+        "@vscode/vsce": "^2.22.0",
+        "eslint": "^8.0.0",
+        "typescript": "^5.0.0"
+    },
+    "dependencies": {
+        "eventsource": "^2.0.2",
+        "highlight.js": "^11.11.1",
+        "markdown-it": "^14.1.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/your-username/local-coderabbit"
+    },
+    "license": "MIT"
+}

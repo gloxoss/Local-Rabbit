@@ -1,0 +1,49 @@
+{
+    "model": "glm-4.7-flash",
+    "min_severity": "warning",
+    "severity_levels": {
+        "critical": 3,
+        "warning": 2,
+        "suggestion": 1
+    },
+    "notifications": {
+        "enabled": true,
+        "on_critical_only": true
+    },
+    "history": {
+        "enabled": true,
+        "folder": "reviews"
+    },
+    "webhooks": {
+        "enabled": false,
+        "slack_url": "",
+        "discord_url": "",
+        "notify_on": [
+            "critical",
+            "warning"
+        ],
+        "include_code_snippet": true,
+        "daily_digest": false
+    },
+    "debounce_seconds": 3,
+    "watch_extensions": [
+        ".ts",
+        ".tsx",
+        ".js",
+        ".jsx",
+        ".py",
+        ".go",
+        ".rs",
+        ".vue",
+        ".svelte"
+    ],
+    "ignore_dirs": [
+        "node_modules",
+        ".git",
+        "__pycache__",
+        "dist",
+        "build",
+        ".next",
+        ".agent"
+    ]
+}
