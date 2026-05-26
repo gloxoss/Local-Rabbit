@@ -5,6 +5,7 @@ Uses a simple HTTP-based server-sent events (SSE) approach for better compatibil
 """
 
 import json
+import time
 import threading
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from pathlib import Path
@@ -41,7 +42,7 @@ class SSEHandler(BaseHTTPRequestHandler):
     
     def _send_cors_headers(self):
         """Add CORS headers for browser access."""
-        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Origin', 'http://localhost:8080')
         self.send_header('Access-Control-Allow-Methods', 'GET, OPTIONS')
         self.send_header('Access-Control-Allow-Headers', 'Content-Type')
     
@@ -64,23 +65,31 @@ class SSEHandler(BaseHTTPRequestHandler):
             # Keep connection alive
             while True:
                 # Send heartbeat every 30 seconds
-                import time
                 time.sleep(30)
                 self._send_event('heartbeat', {'time': datetime.now().isoformat()})
-        except:
+        except Exception:
             pass
         finally:
             if self.wfile in connected_clients:
                 connected_clients.remove(self.wfile)
     
     def _handle_stats(self):
-        """Return current stats as JSON."""
+        """Return current stats from global stats.json."""
         self.send_response(200)
         self.send_header('Content-Type', 'application/json')
         self._send_cors_headers()
         self.end_headers()
         
-        stats = latest_update or {"status": "no_data"}
+        try:
+            stats_path = Path("reviews/stats.json")
+            if stats_path.exists():
+                with open(stats_path, "r", encoding="utf-8") as f:
+                    stats = json.load(f)
+            else:
+                stats = {"status": "no_data", "health_score": 100, "hotspots": []}
+        except Exception as e:
+            stats = {"error": str(e), "status": "error"}
+
         self.wfile.write(json.dumps(stats).encode())
     
     def _handle_health(self):
@@ -102,7 +111,7 @@ class SSEHandler(BaseHTTPRequestHandler):
             message = f"event: {event_type}\ndata: {json.dumps(data)}\n\n"
             self.wfile.write(message.encode())
             self.wfile.flush()
-        except:
+        except Exception:
             pass
 
 
@@ -117,7 +126,7 @@ def broadcast_update(data):
             message = f"event: update\ndata: {json.dumps(data)}\n\n"
             client.write(message.encode())
             client.flush()
-        except:
+        except Exception:
             dead_clients.append(client)
     
     # Clean up disconnected clients
@@ -150,6 +159,7 @@ def notify_file_review(filepath, issues, status="reviewing"):
             "warning": len(issues.get("warning", [])),
             "suggestion": len(issues.get("suggestion", []))
         },
+        "details": issues,
         "status": status,
         "time": datetime.now().strftime("%H:%M:%S")
     })

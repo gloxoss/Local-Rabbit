@@ -80,7 +80,7 @@ def get_top_issues(reviews_dir: Path, limit: int = 5) -> list[dict]:
                     if issue_key not in issue_counts:
                         issue_counts[issue_key] = {"text": issue, "count": 0, "severity": severity}
                     issue_counts[issue_key]["count"] += 1
-        except:
+        except Exception:
             continue
     
     # Sort by count
@@ -289,7 +289,7 @@ def send_to_slack(webhook_url: str, report: str) -> bool:
         )
         urllib.request.urlopen(req, timeout=10)
         return True
-    except:
+    except Exception:
         return False
 
 
@@ -309,7 +309,7 @@ def send_to_discord(webhook_url: str, report: str) -> bool:
         )
         urllib.request.urlopen(req, timeout=10)
         return True
-    except:
+    except Exception:
         return False
 
 

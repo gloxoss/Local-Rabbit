@@ -1,3 +1,4 @@
+import * as vscode from 'vscode';
 import { DiagnosticsManager } from './diagnostics';
 import { StatusBarManager } from './statusBar';
 
@@ -11,6 +12,11 @@ interface SSEMessage {
         critical: number;
         warning: number;
         suggestion: number;
+    };
+    details?: {
+        critical: string[];
+        warning: string[];
+        suggestion: string[];
     };
     message?: string;
     status?: string;
@@ -112,8 +118,35 @@ export class SSEClient {
             // Update status bar with counts
             this.statusBar.setIssueCount(data.issues);
 
-            // Note: Full diagnostic details would need to be fetched from stats.json
-            // or extended SSE payload
+            // Process detailed diagnostics if available
+            if (data.details) {
+                const allIssues: any[] = [];
+
+                // Parse critical
+                if (data.details.critical) {
+                    data.details.critical.forEach(line =>
+                        allIssues.push(this.diagnosticsManager.parseIssueLine(line, 'critical'))
+                    );
+                }
+
+                // Parse warning
+                if (data.details.warning) {
+                    data.details.warning.forEach(line =>
+                        allIssues.push(this.diagnosticsManager.parseIssueLine(line, 'warning'))
+                    );
+                }
+
+                // Parse suggestion
+                if (data.details.suggestion) {
+                    data.details.suggestion.forEach(line =>
+                        allIssues.push(this.diagnosticsManager.parseIssueLine(line, 'suggestion'))
+                    );
+                }
+
+                // Update diagnostics
+                const uri = vscode.Uri.file(data.file);
+                this.diagnosticsManager.setDiagnostics(uri, allIssues);
+            }
         }
     }
 

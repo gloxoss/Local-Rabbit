@@ -5,6 +5,7 @@ Generate unit tests for code using AI.
 """
 
 import json
+import os
 import re
 from pathlib import Path
 from dataclasses import dataclass
@@ -25,9 +26,9 @@ class GeneratedTest:
 class TestGenerator:
     """Generates unit tests using AI"""
     
-    def __init__(self, ollama_url: str = "http://localhost:11434", model: str = "deepseek-coder:6.7b"):
-        self.ollama_url = ollama_url
-        self.model = model
+    def __init__(self, ollama_url: str = None, model: str = None):
+        self.ollama_url = ollama_url or os.environ.get('OLLAMA_HOST', 'http://localhost:11434')
+        self.model = model or os.environ.get('OLLAMA_MODEL', 'qwen2.5-coder')
     
     def detect_framework(self, file_path: Path) -> str:
         """Detect appropriate test framework based on file type"""
@@ -69,7 +70,7 @@ class TestGenerator:
         """Generate tests for a file"""
         try:
             code = file_path.read_text(encoding='utf-8')
-        except:
+        except Exception:
             return None
         
         framework = self.detect_framework(file_path)

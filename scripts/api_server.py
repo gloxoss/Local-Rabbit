@@ -6,6 +6,7 @@ Runs in Docker and accepts review requests from any VS Code workspace.
 
 import os
 import sys
+import re
 import json
 import asyncio
 from pathlib import Path
@@ -13,24 +14,26 @@ from typing import Optional
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
-from pydantic import BaseModel
 import uvicorn
 
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from scripts.watcher import (
-    get_client, 
-    load_agent_context, 
-    load_custom_prompt, 
-    parse_severity,
-    BASE_PROMPT
+# SOLID module imports
+from scripts.config import load_agent_context, load_custom_prompt, BASE_PROMPT
+from scripts.client import get_client
+from scripts.models import (
+    ReviewRequest, Issue, ReviewResponse,
+    FeedbackRequest, QueryRequest,
+    ChatContext, ChatRequest,
+    HealthResponse, FeedbackStatsResponse
 )
+from scripts.watcher import parse_severity
 from scripts.context_loader import load_project_context, ContextLoader
-from scripts.model_router import get_router, select_model, ModelProvider, MODELS
+from scripts.experimental.model_router import get_router, select_model, ModelProvider, MODELS
 from scripts.feedback_store import (
-    get_feedback_store, 
-    record_feedback, 
+    get_feedback_store,
+    record_feedback,
     get_prompt_adjustments,
     FeedbackEntry
 )
@@ -47,7 +50,13 @@ app = FastAPI(
 # Enable CORS for VS Code extension
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:8080",
+        "http://localhost:3000",
+        "http://127.0.0.1:8080",
+        "http://127.0.0.1:3000",
+        "vscode-webview://*"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -59,66 +68,8 @@ agent_context = ""
 custom_prompt = BASE_PROMPT
 
 
-class ReviewRequest(BaseModel):
-    code: str
-    filename: str
-    language: Optional[str] = None
-    project_root: Optional[str] = None  # For context loading
 
 
-class Issue(BaseModel):
-    line: int
-    severity: str  # critical, warning, suggestion
-    message: str
-    fixCode: Optional[str] = None
-
-
-class ReviewResponse(BaseModel):
-    issues: list[Issue]
-    raw: str
-    model: str
-    provider: str = "unknown"
-    context_used: bool = False
-    routing_reason: Optional[str] = None
-
-
-class FeedbackRequest(BaseModel):
-    issue_type: str
-    severity: str
-    action: str  # accepted, rejected
-    filename: Optional[str] = None
-    language: Optional[str] = None
-
-
-class QueryRequest(BaseModel):
-    query: str
-    n_results: int = 5
-
-
-class ChatContext(BaseModel):
-    file: Optional[str] = None
-    selection: Optional[str] = None
-    line: Optional[int] = None
-    project_root: Optional[str] = None
-
-
-class ChatRequest(BaseModel):
-    query: str
-    context: Optional[ChatContext] = None
-
-
-class HealthResponse(BaseModel):
-    status: str
-    model: str
-    provider: str
-
-
-class FeedbackStatsResponse(BaseModel):
-    total_feedback: int
-    accepted: int
-    rejected: int
-    acceptance_rate: float
-    learning_active: bool
 
 
 @app.post("/api/query")
@@ -230,12 +181,6 @@ async def stream_chat(request: ChatRequest):
         yield f"data: {json.dumps({'type': 'error', 'content': str(e)})}\n\n"
 
 
-@app.post("/api/chat/stream")
-async def chat_stream(request: ChatRequest):
-    """Stream chat response with context."""
-    return StreamingResponse(stream_chat(request), media_type="text/event-stream")
-
-
 @app.on_event("startup")
 async def startup():
     """Initialize AI client on startup."""
@@ -243,15 +188,15 @@ async def startup():
     
     print("🚀 Starting Local CodeRabbit API Server...")
     
-    # Load .env if exists
-    env_path = Path(__file__).parent.parent / ".env"
-    if env_path.exists():
-        print(f"📋 Loading .env from {env_path}")
-        with open(env_path) as f:
-            for line in f:
-                if '=' in line and not line.strip().startswith('#'):
-                    key, val = line.strip().split('=', 1)
-                    os.environ[key.strip()] = val.strip()
+    # Load .env if python-dotenv available
+    try:
+        from dotenv import load_dotenv
+        env_path = Path(__file__).parent.parent / ".env"
+        if env_path.exists():
+            load_dotenv(env_path)
+            print(f"📋 Loaded .env from {env_path}")
+    except ImportError:
+        pass
     
     # Initialize client
     client = get_client()
@@ -452,7 +397,6 @@ async def review(request: ReviewRequest):
                 message = item
                 
                 # Try to extract "Line N:" pattern
-                import re
                 match = re.search(r'[Ll]ine\s*(\d+)', item)
                 if match:
                     line = int(match.group(1))
@@ -472,6 +416,22 @@ async def review(request: ReviewRequest):
             routing_reason=routing_reason
         )
         
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# ─── Prompt Management ───────────────────────────────────────────────────────
+
+@app.post("/api/save-prompt")
+async def save_prompt(data: dict):
+    """Save custom prompts to prompts.json (migrated from server.py)."""
+    if "review_prompt" not in data:
+        raise HTTPException(status_code=400, detail="Missing 'review_prompt'")
+
+    prompts_path = PROJECT_ROOT / "prompts.json"
+    try:
+        with open(prompts_path, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=4)
+        return {"status": "success", "message": "Saved successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

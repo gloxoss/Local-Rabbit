@@ -47,6 +47,7 @@ export declare class DiagnosticsManager implements vscode.Disposable {
     };
     private getSeverity;
     private extractLineNumber;
+    parseIssueLine(line: string, severity: 'critical' | 'warning' | 'suggestion'): Issue;
     private cleanMessage;
     dispose(): void;
 }

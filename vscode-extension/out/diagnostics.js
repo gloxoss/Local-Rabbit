@@ -178,6 +178,14 @@ class DiagnosticsManager {
         }
         return null;
     }
+    parseIssueLine(line, severity) {
+        return {
+            file: '',
+            line: this.extractLineNumber(line) || 1,
+            severity: severity,
+            message: this.cleanMessage(line, severity.toUpperCase())
+        };
+    }
     cleanMessage(text, severity) {
         return text
             .replace(/🔴|🟡|🔵/g, '')

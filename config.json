@@ -44,6 +44,35 @@
         "dist",
         "build",
         ".next",
-        ".agent"
-    ]
+        ".agent",
+        "reviews"
+    ],
+    "cortex": {
+        "enabled": true,
+        "db_path": "data/cortex_db",
+        "collection_name": "cortex_codebase_v2",
+        "model": "nomic-embed-text"
+    },
+    "orchestrator": {
+        "mode": "combined",
+        "log_file": "data/orchestrator.log",
+        "projects": [
+            "."
+        ]
+    },
+    "schedule": {
+        "daily_audit": "18:00",
+        "enabled": true
+    },
+    "email": {
+        "enabled": false,
+        "smtp_host": "",
+        "smtp_port": 587,
+        "smtp_user": "",
+        "smtp_password_env": "SMTP_PASSWORD",
+        "from": "",
+        "to": [],
+        "on_critical": true,
+        "daily_digest": true
+    }
 }

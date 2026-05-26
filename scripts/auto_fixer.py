@@ -5,6 +5,7 @@ Generate AI-powered fixes for detected issues with diff preview.
 """
 
 import json
+import os
 import re
 import difflib
 from pathlib import Path
@@ -39,9 +40,9 @@ class DiffChunk:
 class AutoFixer:
     """Generates AI-powered fixes for code issues"""
     
-    def __init__(self, ollama_url: str = "http://localhost:11434", model: str = "deepseek-coder:6.7b"):
-        self.ollama_url = ollama_url
-        self.model = model
+    def __init__(self, ollama_url: str = None, model: str = None):
+        self.ollama_url = ollama_url or os.environ.get('OLLAMA_HOST', 'http://localhost:11434')
+        self.model = model or os.environ.get('OLLAMA_MODEL', 'qwen2.5-coder')
     
     def generate_fix(self, code: str, issue: str, context: str = "") -> Optional[Fix]:
         """Generate a fix for a single issue"""
@@ -88,7 +89,7 @@ Provide ONLY the fixed code, no explanations. Output the complete fixed code blo
         """Generate fixes for all issues in a file"""
         try:
             content = file_path.read_text(encoding='utf-8')
-        except:
+        except Exception:
             return []
         
         lines = content.split('\n')

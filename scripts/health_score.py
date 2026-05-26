@@ -175,7 +175,7 @@ def analyze_file(file_path: Path) -> Optional[FileMetrics]:
     
     try:
         content = file_path.read_text(encoding='utf-8', errors='ignore')
-    except:
+    except Exception:
         return None
     
     code, blank, comment = count_lines(content)

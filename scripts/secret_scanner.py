@@ -477,7 +477,7 @@ def load_allowlist(path: Path) -> set:
         with open(path) as f:
             data = json.load(f)
             return set(data.get("allowed_hashes", []))
-    except:
+    except Exception:
         return set()
 
 

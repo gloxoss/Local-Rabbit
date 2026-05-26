@@ -7,9 +7,12 @@ Blocks commits if critical issues are found.
 import os
 import sys
 import subprocess
-import json
 from pathlib import Path
-from openai import OpenAI
+
+# SOLID module imports
+sys.path.insert(0, str(Path(__file__).parent))
+from client import get_client, get_model_name
+
 
 def get_staged_files():
     """Get list of staged files that match our extensions."""
@@ -23,12 +26,6 @@ def get_staged_files():
         if f and Path(f).suffix in extensions:
             files.append(f)
     return files
-
-def get_client():
-    return OpenAI(
-        api_key=os.environ.get('OPENAI_API_KEY', os.environ.get('ZAI_API_KEY')),
-        base_url=os.environ.get('OPENAI_API_BASE', os.environ.get('ZAI_API_BASE', 'https://api.z.ai/v1'))
-    )
 
 def review_file(client, filepath):
     """Quick review for critical issues only."""
@@ -53,7 +50,7 @@ CODE:
 """ + code[:3000] + "\n```"
         
         response = client.chat.completions.create(
-            model=os.environ.get('ZAI_MODEL', 'glm-4'),
+            model=get_model_name(),
             messages=[{'role': 'user', 'content': prompt}],
             max_tokens=500
         )

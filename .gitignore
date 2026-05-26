@@ -1,18 +1,3 @@
-# Environment & Secrets
+node_modules/
 .env
-pr-agent/.secrets.toml
-
-# Docker
-ollama_data/
-
-# Logs
 *.log
-logs/
-
-# OS
-.DS_Store
-Thumbs.db
-
-# IDE
-.vscode/
-.idea/

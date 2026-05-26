@@ -182,6 +182,15 @@ export class DiagnosticsManager implements vscode.Disposable {
         return null;
     }
 
+    public parseIssueLine(line: string, severity: 'critical' | 'warning' | 'suggestion'): Issue {
+        return {
+            file: '',
+            line: this.extractLineNumber(line) || 1,
+            severity: severity,
+            message: this.cleanMessage(line, severity.toUpperCase())
+        };
+    }
+
     private cleanMessage(text: string, severity: string): string {
         return text
             .replace(/🔴|🟡|🔵/g, '')

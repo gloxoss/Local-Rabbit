@@ -116,7 +116,7 @@ def get_file_last_author(file_path: str) -> dict:
                 'commit_message': parts[3]
             }
         return None
-    except:
+    except Exception:
         return None
 
 

@@ -15,9 +15,6 @@ export declare class DashboardViewProvider implements vscode.WebviewViewProvider
      * Refresh dashboard data
      */
     refresh(): Promise<void>;
-    /**
-     * Reset learning data
-     */
     private _resetLearning;
     /**
      * Fetch from API
